@@ -12,7 +12,7 @@ const TodoForm = () => {
   const handleAddTodo = () => {};
 
   return (
-    <form onSubmit={handleAddTodo}>
+    <form onSubmit={handleAddTodo} className="flex flex-col">
       <label htmlFor="title">제목:</label>
       <input
         type="text"

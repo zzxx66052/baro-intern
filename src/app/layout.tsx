@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import TodoQueryProvider from "./TodoQueryProvider";
+import TodoQueryProvider from "./todoQueryProvider";
 
 export const metadata: Metadata = {
   title: "baro-intern",
