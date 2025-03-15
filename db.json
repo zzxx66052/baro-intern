@@ -1,16 +1,9 @@
 {
   "todos": [
     {
-      "id": "1",
-      "title": "첫 번째 할 일",
+      "contents": "123123123",
       "completed": false,
-      "isCompleted": false,
-      "createdAt": 1718587545473
-    },
-    {
-      "text": "123123",
-      "completed": false,
-      "id": "f2lFpLF"
+      "id": 1
     }
   ]
 }
