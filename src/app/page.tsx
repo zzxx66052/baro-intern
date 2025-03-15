@@ -1,3 +1,9 @@
+import TodoForm from "@/componenets/TodoForm";
+
 export default function Home() {
-  return <div></div>;
+  return (
+    <div>
+      <TodoForm />
+    </div>
+  );
 }

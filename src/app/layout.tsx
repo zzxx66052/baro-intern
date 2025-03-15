@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import TodoQueryProvider from "./TodoQueryProvider";
 
 export const metadata: Metadata = {
   title: "baro-intern",
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <TodoQueryProvider>
+        <body>{children}</body>
+      </TodoQueryProvider>
     </html>
   );
 }
