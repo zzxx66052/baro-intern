@@ -1,6 +1,6 @@
 import type { Todo } from "@/types/todoType";
 
-const API_URL = "https://playful-leeward-bee.glitch.me";
+const API_URL = "https://playful-leeward-bee.glitch.me/todos";
 
 export const fetchTodos = async (): Promise<Todo[]> => {
   const response = await fetch(API_URL);
