@@ -1,0 +1,18 @@
+{
+  "todos": [
+    {
+      "title": "오늘할일",
+      "contents": "바로인턴마무리",
+      "isCompleted": false,
+      "createdAt": 1742116328738,
+      "id": 1
+    },
+    {
+      "title": "우와",
+      "contents": "잘되나",
+      "isCompleted": false,
+      "createdAt": 1742117854156,
+      "id": 2
+    }
+  ]
+}
