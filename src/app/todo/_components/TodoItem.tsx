@@ -4,8 +4,6 @@ import { deleteTodo, updateTodo } from "@/api/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Todo } from "@/types/todoType";
 import { useState } from "react";
-import { DeleteIcon } from "@/components/icons/DeleteIcon";
-import { UpdateIcon } from "@/components/icons/UpdateIcon";
 import TodoCheckbox from "./TodoCheckbox";
 import TodoActions from "./TodoActions";
 import TodoEditForm from "./TodoEditForm";
