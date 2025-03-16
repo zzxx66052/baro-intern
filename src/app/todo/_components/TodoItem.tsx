@@ -6,6 +6,9 @@ import type { Todo } from "@/types/todoType";
 import { useState } from "react";
 import { DeleteIcon } from "@/components/icons/DeleteIcon";
 import { UpdateIcon } from "@/components/icons/UpdateIcon";
+import TodoCheckbox from "./TodoCheckbox";
+import TodoActions from "./TodoActions";
+import TodoEditForm from "./TodoEditForm";
 
 const TodoItem = ({ todo }: { todo: Todo }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -51,102 +54,43 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: () => deleteTodo(todo.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["todos"] }),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async (updatedData: Partial<Todo>) => {
-      return updateTodo(todo.id, updatedData);
-    },
-    onMutate: async (updatedData) => {
-      await queryClient.cancelQueries({ queryKey: ["todos"] });
-
-      const previousTodos = queryClient.getQueryData<Todo[]>(["todos"]);
-
-      queryClient.setQueryData<Todo[]>(["todos"], (oldTodos) =>
-        oldTodos?.map((t) => (t.id === todo.id ? { ...t, ...updatedData } : t))
-      );
-
-      return { previousTodos };
-    },
-    onError: (err, _, context) => {
-      if (context?.previousTodos) {
-        queryClient.setQueryData(["todos"], context.previousTodos);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
-  });
-
   return (
     <li className="flex flex-col gap-2 border p-3 rounded">
-      <input
-        type="checkbox"
-        checked={todo.isCompleted}
-        onChange={() =>
+      <TodoCheckbox
+        isCompleted={todo.isCompleted}
+        onToggle={() =>
           toggleMutation.mutate({ isCompleted: !todo.isCompleted })
         }
-        className="mr-2 w-5 h-5 cursor-pointer accent-green-500"
       />
 
       {isEditing ? (
-        <>
-          <input
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            className="rounded border p-1"
-          />
-          <textarea
-            value={newContents}
-            onChange={(e) => setNewContents(e.target.value)}
-            className="rounded border p-1"
-          />
-          <button
-            onClick={() =>
-              updateMutation.mutate(
-                { title: newTitle, contents: newContents },
-                {
-                  onSuccess: () => setIsEditing(false),
-                }
-              )
-            }
-            className="mt-2 rounded bg-blue-500 px-2 py-1 text-white hover:bg-blue-600"
-          >
-            저장
-          </button>
-        </>
+        <TodoEditForm
+          newTitle={newTitle}
+          newContents={newContents}
+          setNewTitle={setNewTitle}
+          setNewContents={setNewContents}
+          todo={todo}
+          onCancel={() => setIsEditing(false)}
+        />
       ) : (
         <>
           <div className="flex justify-between items-center">
             <span
-              className={`cursor-pointer ${
+              className={`${
                 todo.isCompleted ? "line-through text-gray-400" : ""
               }`}
             >
               {todo.title}
             </span>
-            <div className="flex gap-2">
-              <span className="text-xs text-gray-400">
+            <div className="flex flex-col gap-2">
+              <span className="text-sm text-gray-400">
                 {formatDate(todo.createdAt)}
               </span>
 
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="text-blue-500"
-                >
-                  <UpdateIcon />
-                </button>
-                <button
-                  onClick={() => deleteMutation.mutate()}
-                  className="text-red-500"
-                >
-                  <DeleteIcon />
-                </button>
-              </div>
+              <TodoActions
+                onEdit={() => setIsEditing(true)}
+                onDelete={() => deleteTodo(todo.id)}
+              />
             </div>
           </div>
           <p className="text-sm text-gray-500">{todo.contents}</p>
