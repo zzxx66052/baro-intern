@@ -11,9 +11,18 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(todo.title);
   const [newContents, setNewContents] = useState(todo.contents);
-  // const [isCompleted, setIsCompleted] = useState(todo.isCompleted);
 
   const queryClient = useQueryClient();
+
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      weekday: "short",
+    });
+  };
 
   const toggleMutation = useMutation({
     mutationFn: async (updatedTodo: Partial<Todo>) => {
@@ -120,18 +129,24 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
               {todo.title}
             </span>
             <div className="flex gap-2">
-              <button
-                onClick={() => setIsEditing(true)}
-                className="text-blue-500"
-              >
-                <UpdateIcon />
-              </button>
-              <button
-                onClick={() => deleteMutation.mutate()}
-                className="text-red-500"
-              >
-                <DeleteIcon />
-              </button>
+              <span className="text-xs text-gray-400">
+                {formatDate(todo.createdAt)}
+              </span>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="text-blue-500"
+                >
+                  <UpdateIcon />
+                </button>
+                <button
+                  onClick={() => deleteMutation.mutate()}
+                  className="text-red-500"
+                >
+                  <DeleteIcon />
+                </button>
+              </div>
             </div>
           </div>
           <p className="text-sm text-gray-500">{todo.contents}</p>
