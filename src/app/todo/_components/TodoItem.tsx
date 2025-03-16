@@ -11,25 +11,33 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [newTitle, setNewTitle] = useState(todo.title);
   const [newContents, setNewContents] = useState(todo.contents);
-  const [isCompleted, setIsCompleted] = useState(todo.isCompleted);
+  // const [isCompleted, setIsCompleted] = useState(todo.isCompleted);
 
   const queryClient = useQueryClient();
 
   const toggleMutation = useMutation({
-    mutationFn: async () => {
-      await updateTodo(todo.id, { isCompleted: !isCompleted });
+    mutationFn: async (updatedTodo: Partial<Todo>) => {
+      await updateTodo(todo.id, updatedTodo);
     },
     onMutate: async () => {
-      setIsCompleted((prev) => !prev);
       await queryClient.cancelQueries({ queryKey: ["todos"] });
-      return { previousTodos: queryClient.getQueryData(["todos"]) };
+
+      const previousTodos = queryClient.getQueryData<Todo[]>(["todos"]);
+
+      queryClient.setQueryData<Todo[]>(["todos"], (oldTodos) =>
+        oldTodos?.map((t) =>
+          t.id === todo.id ? { ...t, isCompleted: !t.isCompleted } : t
+        )
+      );
+
+      return { previousTodos };
     },
-    onError: (err, variables, context) => {
+    onError: (err, _, context) => {
       if (context?.previousTodos) {
         queryClient.setQueryData(["todos"], context.previousTodos);
       }
     },
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
@@ -40,11 +48,27 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: () =>
-      updateTodo(todo.id, { title: newTitle, contents: newContents }),
-    onSuccess: () => {
+    mutationFn: async (updatedData: Partial<Todo>) => {
+      return updateTodo(todo.id, updatedData);
+    },
+    onMutate: async (updatedData) => {
+      await queryClient.cancelQueries({ queryKey: ["todos"] });
+
+      const previousTodos = queryClient.getQueryData<Todo[]>(["todos"]);
+
+      queryClient.setQueryData<Todo[]>(["todos"], (oldTodos) =>
+        oldTodos?.map((t) => (t.id === todo.id ? { ...t, ...updatedData } : t))
+      );
+
+      return { previousTodos };
+    },
+    onError: (err, _, context) => {
+      if (context?.previousTodos) {
+        queryClient.setQueryData(["todos"], context.previousTodos);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
-      setIsEditing(false);
     },
   });
 
@@ -53,7 +77,9 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
       <input
         type="checkbox"
         checked={todo.isCompleted}
-        onChange={() => toggleMutation.mutate()}
+        onChange={() =>
+          toggleMutation.mutate({ isCompleted: !todo.isCompleted })
+        }
         className="mr-2 w-5 h-5 cursor-pointer accent-green-500"
       />
 
@@ -70,7 +96,14 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
             className="rounded border p-1"
           />
           <button
-            onClick={() => updateMutation.mutate()}
+            onClick={() =>
+              updateMutation.mutate(
+                { title: newTitle, contents: newContents },
+                {
+                  onSuccess: () => setIsEditing(false),
+                }
+              )
+            }
             className="mt-2 rounded bg-blue-500 px-2 py-1 text-white hover:bg-blue-600"
           >
             저장
@@ -80,7 +113,6 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
         <>
           <div className="flex justify-between items-center">
             <span
-              onClick={() => toggleMutation.mutate()}
               className={`cursor-pointer ${
                 todo.isCompleted ? "line-through text-gray-400" : ""
               }`}
