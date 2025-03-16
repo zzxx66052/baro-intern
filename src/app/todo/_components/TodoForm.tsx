@@ -42,6 +42,7 @@ const TodoForm = () => {
         onChange={(e) => setTitle(e.target.value)}
         className="w-full rounded border p-2"
         placeholder="제목을 입력하세요..."
+        required
       />
       <input
         type="text"
@@ -49,6 +50,7 @@ const TodoForm = () => {
         onChange={(e) => setContents(e.target.value)}
         className="w-full rounded border p-2"
         placeholder="내용을 입력하세요..."
+        required
       />
       <button
         type="submit"

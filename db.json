@@ -1,20 +1,11 @@
 {
   "todos": [
     {
-      "title": "123123",
-      "contents": "123123",
-      "isCompleted": false,
-      "createdAt": 1742110360747,
-      "id": 1,
-      "completed": true
-    },
-    {
-      "title": "123123",
-      "contents": "123123",
-      "isCompleted": false,
-      "createdAt": 1742111051062,
-      "id": 2,
-      "completed": true
+      "title": "오늘할일",
+      "contents": "바로인턴마무리",
+      "isCompleted": true,
+      "createdAt": 1742116328738,
+      "id": 1
     }
   ]
 }

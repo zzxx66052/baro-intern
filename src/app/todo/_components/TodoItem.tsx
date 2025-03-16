@@ -1,9 +1,11 @@
 "use client";
 
-import { deleteTodo, toggleTodo, updateTodo } from "@/api/todo";
+import { deleteTodo, updateTodo } from "@/api/todo";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Todo } from "@/types/todoType";
 import { useState } from "react";
+import { DeleteIcon } from "@/components/icons/DeleteIcon";
+import { UpdateIcon } from "@/components/icons/UpdateIcon";
 
 const TodoItem = ({ todo }: { todo: Todo }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -17,8 +19,15 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
     mutationFn: async () => {
       await updateTodo(todo.id, { isCompleted: !isCompleted });
     },
-    onMutate: () => {
+    onMutate: async () => {
       setIsCompleted((prev) => !prev);
+      await queryClient.cancelQueries({ queryKey: ["todos"] });
+      return { previousTodos: queryClient.getQueryData(["todos"]) };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousTodos) {
+        queryClient.setQueryData(["todos"], context.previousTodos);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
@@ -83,13 +92,13 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
                 onClick={() => setIsEditing(true)}
                 className="text-blue-500"
               >
-                ✏️
+                <UpdateIcon />
               </button>
               <button
                 onClick={() => deleteMutation.mutate()}
                 className="text-red-500"
               >
-                🗑️
+                <DeleteIcon />
               </button>
             </div>
           </div>
