@@ -4,6 +4,7 @@ import { fetchTodos } from "@/api/todo";
 import { useQuery } from "@tanstack/react-query";
 import TodoItem from "./TodoItem";
 import type { Todo } from "@/types/todoType";
+import Spinner from "./Spinner";
 
 const TodoList = () => {
   const {
@@ -15,7 +16,7 @@ const TodoList = () => {
     queryFn: fetchTodos,
   });
 
-  if (isLoading) return <p className="text-center">로딩 중...</p>;
+  if (isLoading) return <Spinner />;
   if (isError) return <p className="text-center">오류 발생</p>;
 
   return (

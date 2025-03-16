@@ -119,7 +119,7 @@ const TodoItem = ({ todo }: { todo: Todo }) => {
             >
               {todo.title}
             </span>
-            <div>
+            <div className="flex gap-2">
               <button
                 onClick={() => setIsEditing(true)}
                 className="text-blue-500"
