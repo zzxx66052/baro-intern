@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
 const TodoForm = () => {
+  const [title, setTitle] = useState("");
   const [contents, setContents] = useState("");
   const queryClient = useQueryClient();
 
@@ -12,25 +13,42 @@ const TodoForm = () => {
     mutationFn: addTodo,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] });
+      setTitle("");
       setContents("");
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (contents.trim()) {
-      mutation.mutate(contents);
+    if (title.trim() && contents.trim()) {
+      const newTodo = {
+        title,
+        contents,
+        isCompleted: false,
+        createdAt: Date.now(),
+      };
+      mutation.mutate(newTodo);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 flex gap-2">
+    <form
+      onSubmit={handleSubmit}
+      className="mb-4 flex flex-col gap-2 align-center"
+    >
+      <input
+        type="text"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="w-full rounded border p-2"
+        placeholder="제목을 입력하세요..."
+      />
       <input
         type="text"
         value={contents}
         onChange={(e) => setContents(e.target.value)}
         className="w-full rounded border p-2"
-        placeholder="새로운 투두를 입력하세요..."
+        placeholder="내용을 입력하세요..."
       />
       <button
         type="submit"

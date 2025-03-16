@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "@/app/globals.css";
 import TodoQueryProvider from "./todoQueryProvider";
 
 export const metadata: Metadata = {
@@ -14,9 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <TodoQueryProvider>
-        <body>{children}</body>
-      </TodoQueryProvider>
+      <body>
+        <TodoQueryProvider>{children}</TodoQueryProvider>
+      </body>
     </html>
   );
 }
